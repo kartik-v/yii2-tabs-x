@@ -1,8 +1,8 @@
 {
-    "name": "kartik-v/yii2-popover-x",
-    "description": "An extended bootstrap 3.0 popover widget which combines both the bootstrap popover and modal features and includes various new styling enhancements.",
-    "keywords": ["bootstrap", "popover", "popover-x", "extended", "modal", "modal-popover", "jquery"],
-    "homepage": "https://github.com/kartik-v/yii2-popover-x",
+    "name": "kartik-v/yii2-tabs-x",
+    "description": "An extended bootstrap 3.0 tabs widget with ability to align tabs in multiple ways, add borders, rotated titles, and more.",
+    "keywords": ["bootstrap", "tabs", "tabs-x", "extended", "modal", "modal-tabs", "jquery"],
+    "homepage": "https://github.com/kartik-v/yii2-tabs-x",
     "type": "yii2-extension",
     "license": "BSD 3-Clause",
     "authors": [
@@ -14,7 +14,7 @@
     ],
     "require": {
         "kartik-v/yii2-widgets": "*",
-        "kartik-v/bootstrap-popover-x": "*"
+        "kartik-v/bootstrap-tabs-x": "*"
     },
     "autoload": {
         "psr-4": {

@@ -52,17 +52,36 @@ to the ```require``` section of your `composer.json` file.
 ```php
 use kartik\tabs\TabsX;
 
-TabsX::begin([
-    'header' => 'Hello world',
-    'footer' => Html::button('View', ['class'=>'btn btn-primary']),
-    'toggleButton' => ['class'=>'btn btn-primary'],
+echo TabsX::widget([
+    'position' => TabsX::POS_ABOVE,
+    'align' => TabsX::ALIGN_LEFT,
+    'items' => [
+        [
+            'label' => 'One',
+            'content' => 'Anim pariatur cliche...',
+            'active' => true
+        ],
+        [
+            'label' => 'Two',
+            'content' => 'Anim pariatur cliche...',
+            'headerOptions' => [...],
+            'options' => ['id' => 'myveryownID'],
+        ],
+        [
+            'label' => 'Dropdown',
+            'items' => [
+                 [
+                     'label' => 'DropdownA',
+                     'content' => 'DropdownA, Anim pariatur cliche...',
+                 ],
+                 [
+                     'label' => 'DropdownB',
+                     'content' => 'DropdownB, Anim pariatur cliche...',
+                 ],
+            ],
+        ],
+    ],
 ]);
-
-echo '<p class="text-justify">' .
-    'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.' . 
-    '</p>';
-
-TabsX::end();
 ```
 
 ## License
