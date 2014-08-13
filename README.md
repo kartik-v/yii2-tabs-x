@@ -64,7 +64,7 @@ echo TabsX::widget([
         [
             'label' => 'Two',
             'content' => 'Anim pariatur cliche...',
-            'headerOptions' => [...],
+            'headerOptions' => ['style'=>'font-weight:bold'],
             'options' => ['id' => 'myveryownID'],
         ],
         [

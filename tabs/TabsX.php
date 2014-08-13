@@ -11,10 +11,11 @@ namespace kartik\tabs;
 use Yii;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+use yii\bootstrap\Dropdown;
 
 /**
- * An extended Bootstrap Tabs widget for Yii Framework 2 based on the bootstrap-tabs-x 
- * plugin by Krajee. This widget enhances the default bootstrap tabs plugin with various 
+ * An extended Bootstrap Tabs widget for Yii Framework 2 based on the bootstrap-tabs-x
+ * plugin by Krajee. This widget enhances the default bootstrap tabs plugin with various
  * new styling enhancements.
  *
  * ```php
@@ -30,7 +31,7 @@ use yii\helpers\ArrayHelper;
  *         [
  *             'label' => 'Two',
  *             'content' => 'Anim pariatur cliche...',
- *             'headerOptions' => [...],
+ *             'headerOptions' => [],
  *             'options' => ['id' => 'myveryownID'],
  *         ],
  *         [
@@ -57,64 +58,68 @@ use yii\helpers\ArrayHelper;
  */
 class TabsX extends \yii\bootstrap\Tabs
 {
-    /** 
-     * Tabs direction / position 
+    /**
+     * Tabs direction / position
      */
     const POS_ABOVE = 'above';
     const POS_BELOW = 'below';
     const POS_LEFT = 'left';
     const POS_RIGHT = 'right';
-    
+
     /**
      * Tab align
      */
     const ALIGN_LEFT = 'left';
     const ALIGN_CENTER = 'center';
     const ALIGN_RIGHT = 'right';
-     
+
     /**
      * Tab content fixed heights
      */
-    const HEIGHT_TINY = 'xs';
-    const HEIGHT_SMALL = 'sm';
-    const HEIGHT_MEDIUM = 'md';
-    const HEIGHT_LARGE = 'lg';
-    
+    const SIZE_TINY = 'xs';
+    const SIZE_SMALL = 'sm';
+    const SIZE_MEDIUM = 'md';
+    const SIZE_LARGE = 'lg';
+
     /**
      * @var string the position of the tabs with respect to the tab content Should be
-     * one of the [[TabsX::POS]] constants. Defaults to empty string or the above position
-     * i.e. [[TabsX::POS_ABOVE]].
+     * one of the [[TabsX::POS]] constants. Defaults to [[TabsX::POS_ABOVE]].
      */
-    public $position = '';
-    
+    public $position = self::POS_ABOVE;
+
     /**
      * @var string the alignment of the tab headers with respect to the tab content. Should be
-     * one of the [[TabsX::ALIGN]] constants. Defaults to empty string or the left alignment
-     * i.e. [[TabsX::ALIGN_LEFT]].
+     * one of the [[TabsX::ALIGN]] constants. Defaults to [[TabsX::ALIGN_LEFT]].
      */
-    public $align = '';
-    
+    public $align = self::ALIGN_LEFT;
+
     /**
      * @var boolean whether the tab content should be boxed within a bordered container.
      * Defaults to `false`.
      */
     public $bordered = false;
-    
+
     /**
-     * @var boolean whether the tab header text orientation should be rotated sideways. 
+     * @var boolean whether the tab header text orientation should be rotated sideways.
      * Applicable only when position is one of [[TabsX::POS_LEFT]] or [[TabsX::POS_RIGHT]].
      * Defaults to `false`.
      */
     public $sideways = false;
-    
+
     /**
-     * @var string whether the tab body content height should be of a fixed size. You should 
-     * pass one of the [[TabsX::HEIGHT]] constants. Applicable only when position is one of 
+     * @var boolean whether to fade in each tab pane using the fade animation effect. Defaults
+     * to `true`.
+     */
+    public $fade = true;
+
+    /**
+     * @var string whether the tab body content height should be of a fixed size. You should
+     * pass one of the [[TabsX::SIZE]] constants. Applicable only when position is one of
      * [[TabsX::POS_ABOVE]] or [[TabsX::POS_BELOW]]. Defaults to empty string (meaning dynamic
      * height).
      */
     public $height = '';
-    
+
     /**
      * @var array the HTML attributes for the TabsX container
      */
@@ -128,11 +133,12 @@ class TabsX extends \yii\bootstrap\Tabs
         parent::init();
         $this->registerAssets();
         Html::addCssClass($this->options, 'nav ' . $this->navType);
-        $css = self::getCss('tabs-' .$this->position, $this->position != null) . 
-            self::getCss('tab-align-' . $this->align, $this->align != null) . 
-            self::getCss('tab-bordered', $this->bordered) .
-            self::getCss('tab-sideways', $this->sideways && ($this->position === self::POS_LEFT || $this->position === self::POS_RIGHT)) .
-            self::getCss('tab-height-' . $this->height,  $this->height != null && ($this->position === self::POS_ABOVE || $this->position === self::POS_BELOW));
+        $this->options['role'] = 'tablist';
+        $css = self::getCss("tabs-{$this->position}", $this->position != null) .
+            self::getCss("tab-align-{$this->align}", $this->align != null) .
+            self::getCss("tab-bordered", $this->bordered) .
+            self::getCss("tab-sideways", $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)) .
+            self::getCss("tab-height-{$this->height}", $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW));
         Html::addCssClass($this->containerOptions, 'tabs-x' . $css);
     }
 
@@ -143,19 +149,22 @@ class TabsX extends \yii\bootstrap\Tabs
     {
         echo $this->renderItems();
     }
-    
+
     /**
      * Parse the CSS content to append based on condition
+     *
      * @param string $prop the css property
      * @param boolean $condition the validation to append the CSS class
      * @return string the parsed CSS
      */
-    protected static function getCss($prop = '', $condition = true) {
+    protected static function getCss($prop = '', $condition = true)
+    {
         return $condition ? ' ' . $prop : '';
     }
 
     /**
      * Renders tab items as specified on [[items]].
+     *
      * @return string the rendering result.
      * @throws InvalidConfigException.
      */
@@ -192,13 +201,18 @@ class TabsX extends \yii\bootstrap\Tabs
             } elseif (isset($item['content'])) {
                 $options = array_merge($this->itemOptions, ArrayHelper::getValue($item, 'options', []));
                 $options['id'] = ArrayHelper::getValue($options, 'id', $this->options['id'] . '-tab' . $n);
-
-                Html::addCssClass($options, 'tab-pane');
-                if (ArrayHelper::remove($item, 'active')) {
+                $css = 'tab-pane';
+                $isActive = ArrayHelper::remove($item, 'active');
+                if ($this->fade) {
+                    $css = $isActive ? "{$css} fade in" : "{$css} fade";
+                }
+                Html::addCssClass($options, $css);
+                if ($isActive) {
                     Html::addCssClass($options, 'active');
                     Html::addCssClass($headerOptions, 'active');
                 }
                 $linkOptions['data-toggle'] = 'tab';
+                $linkOptions['role'] = 'tab';
                 $header = Html::a($label, '#' . $options['id'], $linkOptions);
                 $panes[] = Html::tag('div', $item['content'], $options);
             } else {
@@ -209,13 +223,13 @@ class TabsX extends \yii\bootstrap\Tabs
         }
         $headerContent = Html::tag('ul', implode("\n", $headers), $this->options);
         $paneContent = Html::tag('div', implode("\n", $panes), ['class' => 'tab-content']);
-        $tabs =  $headerContent . "\n" . $paneContent;
+        $tabs = $headerContent . "\n" . $paneContent;
         if ($this->position == self::POS_BELOW) {
             $tabs = $paneContent . "\n" . $headerContent;
         }
         return Html::tag('div', $tabs, $this->containerOptions);
     }
-    
+
     /**
      * Registers the needed assets
      */
