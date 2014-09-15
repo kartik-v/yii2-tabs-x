@@ -12,6 +12,7 @@ use Yii;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\Dropdown;
+use yii\base\InvalidConfigException;
 
 /**
  * An extended Bootstrap Tabs widget for Yii Framework 2 based on the bootstrap-tabs-x
