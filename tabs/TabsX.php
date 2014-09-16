@@ -186,7 +186,8 @@ class TabsX extends \yii\bootstrap\Tabs
             $label = $encodeLabel ? Html::encode($item['label']) : $item['label'];
             $headerOptions = array_merge($this->headerOptions, ArrayHelper::getValue($item, 'headerOptions', []));
             $linkOptions = array_merge($this->linkOptions, ArrayHelper::getValue($item, 'linkOptions', []));
-
+            $content = ArrayHelper::getValue($item, 'content', '');
+            
             if (isset($item['items'])) {
                 $label .= ' <b class="caret"></b>';
                 Html::addCssClass($headerOptions, 'dropdown');
@@ -199,7 +200,7 @@ class TabsX extends \yii\bootstrap\Tabs
                 $linkOptions['data-toggle'] = 'dropdown';
                 $header = Html::a($label, "#", $linkOptions) . "\n"
                     . Dropdown::widget(['items' => $item['items'], 'clientOptions' => false, 'view' => $this->getView()]);
-            } elseif (isset($item['content'])) {
+            } else {
                 $options = array_merge($this->itemOptions, ArrayHelper::getValue($item, 'options', []));
                 $options['id'] = ArrayHelper::getValue($options, 'id', $this->options['id'] . '-tab' . $n);
                 $css = 'tab-pane';
@@ -215,9 +216,7 @@ class TabsX extends \yii\bootstrap\Tabs
                 $linkOptions['data-toggle'] = 'tab';
                 $linkOptions['role'] = 'tab';
                 $header = Html::a($label, '#' . $options['id'], $linkOptions);
-                $panes[] = Html::tag('div', $item['content'], $options);
-            } else {
-                throw new InvalidConfigException("Either the 'content' or 'items' option must be set.");
+                $panes[] = Html::tag('div', $content, $options);
             }
 
             $headers[] = Html::tag('li', $header, $headerOptions);
