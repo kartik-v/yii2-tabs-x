@@ -2,7 +2,8 @@ yii2-tabs-x
 =================
 
 An extended tabs widget for Yii Framework 2 based on the [bootstrap-tabs-x jQuery plugin](http://plugins.krajee.com/tabs-x) by Krajee. This plugin includes various CSS3 styling enhancements
-and various tweaks to the core [Bootstrap 3 Tabs plugin](http://getbootstrap.com/javascript/#tabs). It helps you align tabs in multiple ways, add borders, achieve rotated/sideways titles, and more. 
+and various tweaks to the core [Bootstrap 3 Tabs plugin](http://getbootstrap.com/javascript/#tabs). It helps you align tabs in multiple ways, add borders, 
+achieve rotated/sideways titles, load tab content via ajax, and more. 
 
 ## Features  
 
