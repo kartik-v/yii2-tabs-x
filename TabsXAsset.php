@@ -3,13 +3,12 @@
 /**
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014
  * @package yii2-tabs-x
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 namespace kartik\tabs;
 
 use Yii;
-use kartik\widgets\AssetBundle;
 
 /**
  * Asset bundle for TabsX widget. Includes assets from
@@ -20,7 +19,7 @@ use kartik\widgets\AssetBundle;
  * @author Kartik Visweswaran <kartikv2@gmail.com>
  * @since 1.0
  */
-class TabsXAsset extends AssetBundle
+class TabsXAsset extends \kartik\base\AssetBundle
 {
     public $depends = [
         'yii\web\YiiAsset',
