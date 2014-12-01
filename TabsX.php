@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014
  * @package yii2-tabs-x
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 namespace kartik\tabs;
@@ -192,7 +192,7 @@ class TabsX extends \yii\bootstrap\Tabs
                 $label .= ' <b class="caret"></b>';
                 Html::addCssClass($headerOptions, 'dropdown');
 
-                if ($this->renderDropdown($item['items'], $panes)) {
+                if ($this->renderDropdown($n, $item['items'], $panes)) {
                     Html::addCssClass($headerOptions, 'active');
                 }
 

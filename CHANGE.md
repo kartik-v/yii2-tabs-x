@@ -1,3 +1,9 @@
+version 1.2.0
+=============
+**Date:** 01-Dec-2014
+
+- (bug #5): Update renderDropdown for updated release of yii\bootstrap\Tabs.
+
 version 1.1.0
 =============
 **Date:** 10-Nov-2014
