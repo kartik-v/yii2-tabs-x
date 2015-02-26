@@ -1,6 +1,12 @@
 yii2-tabs-x
 =================
 
+[![Latest Stable Version](https://poser.pugx.org/kartik-v/yii2-tabs-x/v/stable.svg)](https://packagist.org/packages/kartik-v/yii2-tabs-x)
+[![License](https://poser.pugx.org/kartik-v/yii2-tabs-x/license.svg)](https://packagist.org/packages/kartik-v/yii2-tabs-x)
+[![Total Downloads](https://poser.pugx.org/kartik-v/yii2-tabs-x/downloads.svg)](https://packagist.org/packages/kartik-v/yii2-tabs-x)
+[![Monthly Downloads](https://poser.pugx.org/kartik-v/yii2-tabs-x/d/monthly.png)](https://packagist.org/packages/kartik-v/yii2-tabs-x)
+[![Daily Downloads](https://poser.pugx.org/kartik-v/yii2-tabs-x/d/daily.png)](https://packagist.org/packages/kartik-v/yii2-tabs-x)
+
 An extended tabs widget for Yii Framework 2 based on the [bootstrap-tabs-x jQuery plugin](http://plugins.krajee.com/tabs-x) by Krajee. This plugin includes various CSS3 styling enhancements
 and various tweaks to the core [Bootstrap 3 Tabs plugin](http://getbootstrap.com/javascript/#tabs). It helps you align tabs in multiple ways, add borders, 
 achieve rotated/sideways titles, load tab content via ajax, and more. 
