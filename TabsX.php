@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2015
  * @package yii2-tabs-x
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 namespace kartik\tabs;
@@ -60,6 +60,8 @@ use yii\base\InvalidConfigException;
  */
 class TabsX extends \yii\bootstrap\Tabs
 {
+    use \kartik\base\WidgetTrait;
+
     /**
      * Tabs direction / position
      */
@@ -128,6 +130,11 @@ class TabsX extends \yii\bootstrap\Tabs
     public $containerOptions = [];
 
     /**
+     * @var array widget plugin options
+     */
+    public $pluginOptions = [];
+
+    /**
      * @var array widget JQuery events. You must define events in
      * event-name => event-function format
      * for example:
@@ -141,11 +148,32 @@ class TabsX extends \yii\bootstrap\Tabs
     public $pluginEvents = [];
 
     /**
+     * @var string the name of the jQuery plugin
+     */
+    protected $_pluginName;
+
+    /**
+     * @var string the hashed global variable name storing the pluginOptions
+     */
+    protected $_hashVar;
+
+    /**
+     * @var string the element's HTML5 data variable name storing the pluginOptions
+     */
+    protected $_dataVar;
+
+    /**
+     * @var string the Json encoded options
+     */
+    protected $_encOptions = '';
+
+    /**
      * Initializes the widget.
      */
     public function init()
     {
         parent::init();
+        $this->_pluginName = 'tabsX';
         if (empty($this->containerOptions['id'])) {
             $this->containerOptions['id'] = $this->options['id'] . '-container';
         }
@@ -158,9 +186,11 @@ class TabsX extends \yii\bootstrap\Tabs
         $css = self::getCss("tabs-{$this->position}", $this->position != null) .
             self::getCss("tab-align-{$this->align}", $this->align != null) .
             self::getCss("tab-bordered", $this->bordered) .
-            self::getCss("tab-sideways", $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)) .
-            self::getCss("tab-height-{$this->height}", $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW));
-        Html::addCssClass($this->containerOptions, 'tabs-x' . $css);
+            self::getCss("tab-sideways",
+                $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)) .
+            self::getCss("tab-height-{$this->height}",
+                $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW));
+        Html::addCssClass($this->containerOptions, $css);
     }
 
     /**
@@ -174,8 +204,9 @@ class TabsX extends \yii\bootstrap\Tabs
     /**
      * Parse the CSS content to append based on condition
      *
-     * @param string $prop the css property
+     * @param string  $prop the css property
      * @param boolean $condition the validation to append the CSS class
+     *
      * @return string the parsed CSS
      */
     protected static function getCss($prop = '', $condition = true)
@@ -207,7 +238,7 @@ class TabsX extends \yii\bootstrap\Tabs
             $headerOptions = array_merge($this->headerOptions, ArrayHelper::getValue($item, 'headerOptions', []));
             $linkOptions = array_merge($this->linkOptions, ArrayHelper::getValue($item, 'linkOptions', []));
             $content = ArrayHelper::getValue($item, 'content', '');
-            
+
             if (isset($item['items'])) {
                 $label .= ' <b class="caret"></b>';
                 Html::addCssClass($headerOptions, 'dropdown');
@@ -219,7 +250,11 @@ class TabsX extends \yii\bootstrap\Tabs
                 Html::addCssClass($linkOptions, 'dropdown-toggle');
                 $linkOptions['data-toggle'] = 'dropdown';
                 $header = Html::a($label, "#", $linkOptions) . "\n"
-                    . Dropdown::widget(['items' => $item['items'], 'clientOptions' => false, 'view' => $this->getView()]);
+                    . Dropdown::widget([
+                        'items' => $item['items'],
+                        'clientOptions' => false,
+                        'view' => $this->getView()
+                    ]);
             } else {
                 $options = array_merge($this->itemOptions, ArrayHelper::getValue($item, 'options', []));
                 $options['id'] = ArrayHelper::getValue($options, 'id', $this->options['id'] . '-tab' . $n);
@@ -257,12 +292,6 @@ class TabsX extends \yii\bootstrap\Tabs
     {
         $view = $this->getView();
         TabsXAsset::register($view);
-        $id = $this->containerOptions['id'];
-        if (!empty($this->pluginEvents)) {
-            foreach ($this->pluginEvents as $event => $handler) {
-                $function = new JsExpression($handler);
-                $script .= "{$id}.on('{$event}', {$function});\n";
-            }
-        }
+        $this->registerPlugin($this->_pluginName, 'jQuery("#' . $this->containerOptions['id'] . '")');
     }
 }

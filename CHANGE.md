@@ -1,3 +1,9 @@
+version 1.2.1
+=============
+**Date:** 05-Mar-2015
+
+- (enh #17): Add `pluginOptions` to better control TabsX.
+
 version 1.2.0
 =============
 **Date:** 05-Mar-2015
