@@ -6,6 +6,7 @@ version 1.2.0
 - Update packagist stats.
 - (enh #15): Add pluginEvents property to register TabsX events.
 - Set release to stable.
+- (enh #16): Parse boolean data attributes correctly in `containerOptions`.
 
 version 1.1.0
 =============

@@ -149,6 +149,9 @@ class TabsX extends \yii\bootstrap\Tabs
         if (empty($this->containerOptions['id'])) {
             $this->containerOptions['id'] = $this->options['id'] . '-container';
         }
+        if (ArrayHelper::getValue($this->containerOptions, 'data-enable-cache', true) === false) {
+            $this->containerOptions['data-enable-cache'] = "false";
+        }
         $this->registerAssets();
         Html::addCssClass($this->options, 'nav ' . $this->navType);
         $this->options['role'] = 'tablist';
