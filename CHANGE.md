@@ -3,7 +3,7 @@ version 1.2.0
 **Date:** 05-Mar-2015
 
 - (bug #5): Update renderDropdown for updated release of yii\bootstrap\Tabs.
-- Update packagist stats
+- Update packagist stats.
 - (enh #15): Add pluginEvents property to register TabsX events.
 
 version 1.1.0
