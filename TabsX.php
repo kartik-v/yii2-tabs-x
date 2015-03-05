@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014
+ * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2015
  * @package yii2-tabs-x
  * @version 1.2.0
  */
@@ -10,6 +10,7 @@ namespace kartik\tabs;
 
 use Yii;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\Dropdown;
 use yii\base\InvalidConfigException;
@@ -127,11 +128,27 @@ class TabsX extends \yii\bootstrap\Tabs
     public $containerOptions = [];
 
     /**
+     * @var array widget JQuery events. You must define events in
+     * event-name => event-function format
+     * for example:
+     * ~~~
+     * pluginEvents = [
+     *     "change" => "function() { log("change"); }",
+     *     "open" => "function() { log("open"); }",
+     * ];
+     * ~~~
+     */
+    public $pluginEvents = [];
+
+    /**
      * Initializes the widget.
      */
     public function init()
     {
         parent::init();
+        if (empty($this->containerOptions['id'])) {
+            $this->containerOptions['id'] = $this->options['id'] . '-container';
+        }
         $this->registerAssets();
         Html::addCssClass($this->options, 'nav ' . $this->navType);
         $this->options['role'] = 'tablist';
@@ -237,5 +254,12 @@ class TabsX extends \yii\bootstrap\Tabs
     {
         $view = $this->getView();
         TabsXAsset::register($view);
+        $id = $this->containerOptions['id'];
+        if (!empty($this->pluginEvents)) {
+            foreach ($this->pluginEvents as $event => $handler) {
+                $function = new JsExpression($handler);
+                $script .= "{$id}.on('{$event}', {$function});\n";
+            }
+        }
     }
 }
