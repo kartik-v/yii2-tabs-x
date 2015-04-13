@@ -1,8 +1,9 @@
 version 1.2.1
 =============
-**Date:** 05-Mar-2015
+**Date:** 13-Apr-2015
 
 - (enh #17): Add `pluginOptions` to better control TabsX.
+- (enh #20): Validate `renderTabContent` property to optionally render panes.
 
 version 1.2.0
 =============

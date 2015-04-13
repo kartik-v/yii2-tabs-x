@@ -271,17 +271,20 @@ class TabsX extends \yii\bootstrap\Tabs
                 $linkOptions['data-toggle'] = 'tab';
                 $linkOptions['role'] = 'tab';
                 $header = Html::a($label, '#' . $options['id'], $linkOptions);
-                $panes[] = Html::tag('div', $content, $options);
+                if ($this->renderTabContent) {
+                    $panes[] = Html::tag('div', $content, $options);
+                }
             }
 
             $headers[] = Html::tag('li', $header, $headerOptions);
         }
-        $headerContent = Html::tag('ul', implode("\n", $headers), $this->options);
-        $paneContent = Html::tag('div', implode("\n", $panes), ['class' => 'tab-content']);
-        $tabs = $headerContent . "\n" . $paneContent;
-        if ($this->position == self::POS_BELOW) {
-            $tabs = $paneContent . "\n" . $headerContent;
-        }
+        $outHeader = Html::tag('ul', implode("\n", $headers), $this->options);
+        if ($this->renderTabContent) {
+            $outPane =  Html::tag('div', implode("\n", $panes), ['class' => 'tab-content']);
+            $tabs = $this->position == self::POS_BELOW ? $outPane . "\n" . $outHeader : $outHeader . "\n" . $outPane;
+        } else {
+            $tabs = $outHeader;
+        } 
         return Html::tag('div', $tabs, $this->containerOptions);
     }
 
