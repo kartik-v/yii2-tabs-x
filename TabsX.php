@@ -189,7 +189,8 @@ class TabsX extends \yii\bootstrap\Tabs
             self::getCss("tab-sideways",
                 $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)) .
             self::getCss("tab-height-{$this->height}",
-                $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW));
+                $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW)) . 
+                ' ' . ArrayHelper::getValue($this->pluginOptions, 'addCss', 'tabs-krajee');
         Html::addCssClass($this->containerOptions, $css);
     }
 
@@ -230,6 +231,9 @@ class TabsX extends \yii\bootstrap\Tabs
         }
 
         foreach ($this->items as $n => $item) {
+            if (!ArrayHelper::remove($item, 'visible', true)) {
+                continue;
+            }
             if (!isset($item['label'])) {
                 throw new InvalidConfigException("The 'label' option is required.");
             }
@@ -268,9 +272,13 @@ class TabsX extends \yii\bootstrap\Tabs
                     Html::addCssClass($options, 'active');
                     Html::addCssClass($headerOptions, 'active');
                 }
-                $linkOptions['data-toggle'] = 'tab';
-                $linkOptions['role'] = 'tab';
-                $header = Html::a($label, '#' . $options['id'], $linkOptions);
+                if (isset($item['url'])) {
+                    $header = Html::a($label, $item['url'], $linkOptions);
+                } else {
+                    $linkOptions['data-toggle'] = 'tab';
+                    $linkOptions['role'] = 'tab';
+                    $header = Html::a($label, '#' . $options['id'], $linkOptions);
+                }
                 if ($this->renderTabContent) {
                     $panes[] = Html::tag('div', $content, $options);
                 }

@@ -1,9 +1,10 @@
 version 1.2.1
 =============
-**Date:** 13-Apr-2015
+**Date:** 26-Jun-2015
 
 - (enh #17): Add `pluginOptions` to better control TabsX.
 - (enh #20): Validate `renderTabContent` property to optionally render panes.
+- (enh #23): Enhance TabsX for `yii\bootstrap\Tabs` update.
 
 version 1.2.0
 =============
