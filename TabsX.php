@@ -11,6 +11,7 @@ namespace kartik\tabs;
 use Yii;
 use yii\helpers\Html;
 use yii\web\JsExpression;
+use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\Dropdown;
 use yii\base\InvalidConfigException;
@@ -313,7 +314,7 @@ class TabsX extends \yii\bootstrap\Tabs
         $this->registerPlugin($this->_pluginName, 'jQuery("#' . $this->containerOptions['id'] . '")');
         if($this->stickyTabs) {
             StickyTabsAsset::register($view);
-            $options = is_array($this->stickyTabs)? $this->stickyTabs : null;
+            $options = is_array($this->stickyTabs)? Json::htmlEncode($this->stickyTabs) : null;
             $view->registerJs('jQuery("#' . $this->containerOptions['id'] . '")'.'.stickyTabs('.$options.')');
         }
     }
