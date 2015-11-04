@@ -14,7 +14,8 @@
     ],
     "require": {
         "kartik-v/yii2-krajee-base": "~1.7",
-        "kartik-v/bootstrap-tabs-x": "~1.3"
+        "kartik-v/bootstrap-tabs-x": "~1.3",
+        "bower-asset/aidanlister/jquery-stickytabs": "*"
     },
     "autoload": {
         "psr-4": {

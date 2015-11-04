@@ -82,6 +82,31 @@ echo TabsX::widget([
 ]);
 ```
 
+## Sticky Tabs
+You can provides pushState (back and forward button support) to Bootstrap tabs by setting the stickyTabs option to true.
+
+```php
+echo TabsX::widget([
+    'stickyTabs' => true,
+    'items' => [
+    // ... items here
+    ]
+]);
+```
+If you want to change the sticky tabs settings you can set the stickyTabs property to an array.
+```php
+echo TabsX::widget([
+    'stickyTabs' => [
+        selectorAttribute => "data-target",
+        backToTop => true,
+    ],
+    'items' => [
+    // ... items here
+    ]
+]);
+```
+For more information see the stickyTabs repo:
+https://github.com/aidanlister/jquery-stickytabs
 ## License
 
 **yii2-tabs-x** is released under the BSD 3-Clause License. See the bundled `LICENSE.md` for details.

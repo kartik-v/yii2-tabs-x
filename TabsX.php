@@ -11,6 +11,7 @@ namespace kartik\tabs;
 use Yii;
 use yii\helpers\Html;
 use yii\web\JsExpression;
+use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\Dropdown;
 use yii\base\InvalidConfigException;
@@ -133,6 +134,13 @@ class TabsX extends \yii\bootstrap\Tabs
      * @var array widget plugin options
      */
     public $pluginOptions = [];
+    
+    /**
+     *
+     * @var array|boolean|null if set then stickytabs are used. If set to array then the array 
+     * is used as the stickytabs settings.
+     */
+    public $stickyTabs;
 
     /**
      * @var array widget JQuery events. You must define events in
@@ -304,5 +312,10 @@ class TabsX extends \yii\bootstrap\Tabs
         $view = $this->getView();
         TabsXAsset::register($view);
         $this->registerPlugin($this->_pluginName, 'jQuery("#' . $this->containerOptions['id'] . '")');
+        if($this->stickyTabs) {
+            StickyTabsAsset::register($view);
+            $options = is_array($this->stickyTabs)? Json::htmlEncode($this->stickyTabs) : null;
+            $view->registerJs('jQuery("#' . $this->containerOptions['id'] . '")'.'.stickyTabs('.$options.')');
+        }
     }
 }
