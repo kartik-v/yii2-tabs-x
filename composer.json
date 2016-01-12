@@ -1,7 +1,15 @@
 {
     "name": "kartik-v/yii2-tabs-x",
     "description": "An extended bootstrap 3.0 tabs widget with ability to align tabs in multiple ways, add borders, rotated titles, and more.",
-    "keywords": ["bootstrap", "tabs", "tabs-x", "extended", "modal", "modal-tabs", "jquery"],
+    "keywords": [
+        "bootstrap",
+        "tabs",
+        "tabs-x",
+        "extended",
+        "modal",
+        "modal-tabs",
+        "jquery"
+    ],
     "homepage": "https://github.com/kartik-v/yii2-tabs-x",
     "type": "yii2-extension",
     "license": "BSD-3-Clause",

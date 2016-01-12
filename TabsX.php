@@ -1,19 +1,21 @@
 <?php
 
 /**
- * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2015
+ * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2016
  * @package yii2-tabs-x
- * @version 1.2.1
+ * @version 1.2.2
  */
 
 namespace kartik\tabs;
 
 use Yii;
 use yii\helpers\Html;
-use yii\web\JsExpression;
+use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\Dropdown;
+use yii\bootstrap\Tabs;
 use yii\base\InvalidConfigException;
+use kartik\base\WidgetTrait;
 
 /**
  * An extended Bootstrap Tabs widget for Yii Framework 2 based on the bootstrap-tabs-x
@@ -58,9 +60,9 @@ use yii\base\InvalidConfigException;
  * @author Kartik Visweswaran <kartikv2@gmail.com>
  * @since 1.0
  */
-class TabsX extends \yii\bootstrap\Tabs
+class TabsX extends Tabs
 {
-    use \kartik\base\WidgetTrait;
+    use WidgetTrait;
 
     /**
      * Tabs direction / position
@@ -86,41 +88,37 @@ class TabsX extends \yii\bootstrap\Tabs
     const SIZE_LARGE = 'lg';
 
     /**
-     * @var string the position of the tabs with respect to the tab content Should be
-     * one of the [[TabsX::POS]] constants. Defaults to [[TabsX::POS_ABOVE]].
+     * @var string the position of the tabs with respect to the tab content Should be one of the [[TabsX::POS]]
+     *     constants. Defaults to [[TabsX::POS_ABOVE]].
      */
     public $position = self::POS_ABOVE;
 
     /**
-     * @var string the alignment of the tab headers with respect to the tab content. Should be
-     * one of the [[TabsX::ALIGN]] constants. Defaults to [[TabsX::ALIGN_LEFT]].
+     * @var string the alignment of the tab headers with respect to the tab content. Should be one of the
+     *     [[TabsX::ALIGN]] constants. Defaults to [[TabsX::ALIGN_LEFT]].
      */
     public $align = self::ALIGN_LEFT;
 
     /**
-     * @var boolean whether the tab content should be boxed within a bordered container.
-     * Defaults to `false`.
+     * @var boolean whether the tab content should be boxed within a bordered container. Defaults to `false`.
      */
     public $bordered = false;
 
     /**
-     * @var boolean whether the tab header text orientation should be rotated sideways.
-     * Applicable only when position is one of [[TabsX::POS_LEFT]] or [[TabsX::POS_RIGHT]].
-     * Defaults to `false`.
+     * @var boolean whether the tab header text orientation should be rotated sideways. Applicable only when position
+     *     is one of [[TabsX::POS_LEFT]] or [[TabsX::POS_RIGHT]]. Defaults to `false`.
      */
     public $sideways = false;
 
     /**
-     * @var boolean whether to fade in each tab pane using the fade animation effect. Defaults
-     * to `true`.
+     * @var boolean whether to fade in each tab pane using the fade animation effect. Defaults to `true`.
      */
     public $fade = true;
 
     /**
-     * @var string whether the tab body content height should be of a fixed size. You should
-     * pass one of the [[TabsX::SIZE]] constants. Applicable only when position is one of
-     * [[TabsX::POS_ABOVE]] or [[TabsX::POS_BELOW]]. Defaults to empty string (meaning dynamic
-     * height).
+     * @var string whether the tab body content height should be of a fixed size. You should pass one of the
+     *     [[TabsX::SIZE]] constants. Applicable only when position is one of [[TabsX::POS_ABOVE]] or
+     *     [[TabsX::POS_BELOW]]. Defaults to empty string (meaning dynamic height).
      */
     public $height = '';
 
@@ -130,14 +128,22 @@ class TabsX extends \yii\bootstrap\Tabs
     public $containerOptions = [];
 
     /**
+     * @var bool whether to enable sticky tabs plugin to maintain tabs push state on browser back and forward
+     */
+    public $enableStickyTabs = false;
+
+    /**
      * @var array widget plugin options
      */
     public $pluginOptions = [];
 
     /**
-     * @var array widget JQuery events. You must define events in
-     * event-name => event-function format
-     * for example:
+     * @var array sticky tabs plugin options
+     */
+    public $stickyTabsOptions = [];
+
+    /**
+     * @var array widget JQuery events. You must define events in event-name => event-function format for example:
      * ~~~
      * pluginEvents = [
      *     "change" => "function() { log("change"); }",
@@ -148,9 +154,14 @@ class TabsX extends \yii\bootstrap\Tabs
     public $pluginEvents = [];
 
     /**
-     * @var string the name of the jQuery plugin
+     * @inheritdoc
      */
-    protected $_pluginName;
+    public $pluginName = 'tabsX';
+
+    /**
+     * @inheritdoc
+     */
+    public $pluginDestroyJs;
 
     /**
      * @var string the hashed global variable name storing the pluginOptions
@@ -170,10 +181,8 @@ class TabsX extends \yii\bootstrap\Tabs
     /**
      * Initializes the widget.
      */
-    public function init()
+    public function initWidget()
     {
-        parent::init();
-        $this->_pluginName = 'tabsX';
         if (empty($this->containerOptions['id'])) {
             $this->containerOptions['id'] = $this->options['id'] . '-container';
         }
@@ -186,11 +195,15 @@ class TabsX extends \yii\bootstrap\Tabs
         $css = self::getCss("tabs-{$this->position}", $this->position != null) .
             self::getCss("tab-align-{$this->align}", $this->align != null) .
             self::getCss("tab-bordered", $this->bordered) .
-            self::getCss("tab-sideways",
-                $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)) .
-            self::getCss("tab-height-{$this->height}",
-                $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW)) . 
-                ' ' . ArrayHelper::getValue($this->pluginOptions, 'addCss', 'tabs-krajee');
+            self::getCss(
+                "tab-sideways",
+                $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)
+            ) .
+            self::getCss(
+                "tab-height-{$this->height}",
+                $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW)
+            ) .
+            ' ' . ArrayHelper::getValue($this->pluginOptions, 'addCss', 'tabs-krajee');
         Html::addCssClass($this->containerOptions, $css);
     }
 
@@ -199,6 +212,7 @@ class TabsX extends \yii\bootstrap\Tabs
      */
     public function run()
     {
+        $this->initWidget();
         echo $this->renderItems();
     }
 
@@ -288,11 +302,11 @@ class TabsX extends \yii\bootstrap\Tabs
         }
         $outHeader = Html::tag('ul', implode("\n", $headers), $this->options);
         if ($this->renderTabContent) {
-            $outPane =  Html::tag('div', implode("\n", $panes), ['class' => 'tab-content']);
+            $outPane = Html::tag('div', implode("\n", $panes), ['class' => 'tab-content']);
             $tabs = $this->position == self::POS_BELOW ? $outPane . "\n" . $outHeader : $outHeader . "\n" . $outPane;
         } else {
             $tabs = $outHeader;
-        } 
+        }
         return Html::tag('div', $tabs, $this->containerOptions);
     }
 
@@ -303,6 +317,12 @@ class TabsX extends \yii\bootstrap\Tabs
     {
         $view = $this->getView();
         TabsXAsset::register($view);
-        $this->registerPlugin($this->_pluginName, 'jQuery("#' . $this->containerOptions['id'] . '")');
+        $id = 'jQuery("#' . $this->containerOptions['id'] . '")';
+        $this->registerPlugin($this->pluginName, $id);
+        if ($this->enableStickyTabs) {
+            StickyTabsAsset::register($view);
+            $opts = Json::encode($this->stickyTabsOptions);
+            $view->registerJs("{$id}.stickyTabs({$opts});");
+        }
     }
 }

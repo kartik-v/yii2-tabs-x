@@ -81,6 +81,22 @@ echo TabsX::widget([
     ],
 ]);
 ```
+## Sticky Tabs
+
+You can provides pushState (back and forward button support) to Bootstrap tabs. You can enable or disable sticky tabs behaviour by setting `enableStickyTabs` property. This will use the [jquery.stickytabs plugin](https://github.com/timabell/jquery-stickytabs) to enable the sticky tabs push state behavior. If you want to change the sticky tabs plugin settings you can set the `stickyTabsOptions` property.
+
+```php
+echo TabsX::widget([
+    'enableStickyTabs' => true,
+    'stickyTabsOptions' => [
+        selectorAttribute => "data-target",
+        backToTop => true,
+    ],
+    'items' => [
+    // ... items here
+    ]
+]);
+```
 
 ## License
 
