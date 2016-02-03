@@ -89,8 +89,8 @@ You can provides pushState (back and forward button support) to Bootstrap tabs. 
 echo TabsX::widget([
     'enableStickyTabs' => true,
     'stickyTabsOptions' => [
-        selectorAttribute => "data-target",
-        backToTop => true,
+        'selectorAttribute' => 'data-target',
+        'backToTop' => true,
     ],
     'items' => [
     // ... items here
