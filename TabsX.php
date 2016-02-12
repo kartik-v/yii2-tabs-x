@@ -168,9 +168,17 @@ class TabsX extends Tabs
      */
     public $printable = false;
 
+    /**
+     * @var array Html options for the tab content header in print view.
+     */
     public $printHeaderOptions = [
         'class' => 'h3'
     ];
+
+    /**
+     * @var bool If true the headers in print view will prepend the main label to the item label in case of dropdowns.
+     */
+    public $printHeaderCrumbs = true;
 
     /**
      * @var string the hashed global variable name storing the pluginOptions
@@ -273,7 +281,9 @@ class TabsX extends Tabs
             $content = ArrayHelper::getValue($item, 'content', '');
 
             if (isset($item['items'])) {
-                $labels = array_merge($labels, ArrayHelper::getColumn('label', $item['items']));
+                $labels = array_merge($labels, array_map(function($subLabel) use($label) {
+                    return $this->printHeaderCrumbs ? "$label - $subLabel" : $subLabel;
+                }, $item['items']));
                 $label .= ' <b class="caret"></b>';
                 Html::addCssClass($headerOptions, 'dropdown');
 
