@@ -3,9 +3,12 @@ Change Log: `yii2-tabs-x`
 
 ## Version 1.2.3
 
-**Date:** 14-Jan-2016
+**Date:** 12-Feb-2016
 
 - (enh #33): Add branch alias for dev-master latest release.
+- (enh #35): Correct README for sticky tabs options usage.
+- (enh #36, #37): Add printable tabs functionality.
+
 
 ## Version 1.2.2
 

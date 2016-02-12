@@ -164,21 +164,24 @@ class TabsX extends Tabs
     public $pluginDestroyJs;
 
     /**
-     * @var bool True if this tab widget should be printable.
+     * @var bool whether this tab widget should be printable.
      */
-    public $printable = false;
+    public $printable = true;
 
     /**
-     * @var array Html options for the tab content header in print view.
+     * @var array the HTML attributes for the tab content header in print view.
      */
-    public $printHeaderOptions = [
-        'class' => 'h3'
-    ];
+    public $printHeaderOptions = ['class' => 'h3'];
 
     /**
-     * @var bool If true the headers in print view will prepend the main label to the item label in case of dropdowns.
+     * @var bool whether the headers in print view will prepend the main label to the item label in case of dropdowns.
      */
     public $printHeaderCrumbs = true;
+
+    /**
+     * @var string the crumb separator for the dropdown headers in the print view when `printHeaderCrumbs` is `true`
+     */
+    public $printCrumbSeparator = ' &raquo; ';
 
     /**
      * @var string the hashed global variable name storing the pluginOptions
@@ -196,7 +199,7 @@ class TabsX extends Tabs
     protected $_encOptions = '';
 
     /**
-     * Initializes the widget.
+     * @inheritdoc
      */
     public function initWidget()
     {
@@ -229,7 +232,7 @@ class TabsX extends Tabs
     }
 
     /**
-     * Renders the widget.
+     * @inheritdoc
      */
     public function run()
     {
@@ -240,7 +243,7 @@ class TabsX extends Tabs
     /**
      * Parse the CSS content to append based on condition
      *
-     * @param string  $prop the css property
+     * @param string $prop the css property
      * @param boolean $condition the validation to append the CSS class
      *
      * @return string the parsed CSS
@@ -251,17 +254,28 @@ class TabsX extends Tabs
     }
 
     /**
-     * Renders tab items as specified on [[items]].
+     * Gets the label for an item configuration
+     * @param array $item
+     *
+     * @return string
+     * @throws InvalidConfigException
+     */
+    protected function getLabel($item = [])
+    {
+        if (!isset($item['label'])) {
+            throw new InvalidConfigException("The 'label' option is required.");
+        }
+        $encodeLabel = ArrayHelper::getValue($item, 'encode', $this->encodeLabels);
+        return $encodeLabel ? Html::encode($item['label']) : $item['label'];
+    }
+    /**
+     * Renders tab items as specified in [[items]].
      *
      * @return string the rendering result.
-     * @throws InvalidConfigException.
      */
     protected function renderItems()
     {
-        $headers = [];
-        $panes = [];
-        // Used for printing.
-        $labels = [];
+        $headers = $panes = $labels = [];
 
         if (!$this->hasActiveTab() && !empty($this->items)) {
             $this->items[0]['active'] = true;
@@ -271,26 +285,20 @@ class TabsX extends Tabs
             if (!ArrayHelper::remove($item, 'visible', true)) {
                 continue;
             }
-            if (!isset($item['label'])) {
-                throw new InvalidConfigException("The 'label' option is required.");
-            }
-            $encodeLabel = isset($item['encode']) ? $item['encode'] : $this->encodeLabels;
-            $label = $encodeLabel ? Html::encode($item['label']) : $item['label'];
+            $label = $this->getLabel($item);
             $headerOptions = array_merge($this->headerOptions, ArrayHelper::getValue($item, 'headerOptions', []));
             $linkOptions = array_merge($this->linkOptions, ArrayHelper::getValue($item, 'linkOptions', []));
             $content = ArrayHelper::getValue($item, 'content', '');
-
             if (isset($item['items'])) {
-                $labels = array_merge($labels, array_map(function($subLabel) use($label) {
-                    return $this->printHeaderCrumbs ? "$label - $subLabel" : $subLabel;
-                }, $item['items']));
+                foreach ($item['items'] as $subItem) {
+                    $subLabel = $this->getLabel($subItem);
+                    $labels[] = $this->printHeaderCrumbs ? $label . $this->printCrumbSeparator . $subLabel : $subLabel;
+                }
                 $label .= ' <b class="caret"></b>';
                 Html::addCssClass($headerOptions, 'dropdown');
-
                 if ($this->renderDropdown($n, $item['items'], $panes)) {
                     Html::addCssClass($headerOptions, 'active');
                 }
-
                 Html::addCssClass($linkOptions, 'dropdown-toggle');
                 $linkOptions['data-toggle'] = 'dropdown';
                 $header = Html::a($label, "#", $linkOptions) . "\n"
@@ -324,7 +332,6 @@ class TabsX extends Tabs
                     $panes[] = Html::tag('div', $content, $options);
                 }
             }
-
             $headers[] = Html::tag('li', $header, $headerOptions);
         }
         $outHeader = Html::tag('ul', implode("\n", $headers), $this->options);
@@ -332,8 +339,7 @@ class TabsX extends Tabs
             $outPane = Html::beginTag('div', ['class' => 'tab-content' . $this->getCss('printable', $this->printable)]);
             foreach ($panes as $i => $pane) {
                 if ($this->printable) {
-
-                    $outPane .= Html::tag('div', $labels[$i], $this->printHeaderOptions) . "\n";
+                    $outPane .= Html::tag('div', ArrayHelper::getValue($labels, $i), $this->printHeaderOptions) . "\n";
                 }
                 $outPane .= "$pane\n";
             }
