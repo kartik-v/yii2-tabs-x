@@ -366,6 +366,7 @@ class TabsX extends Tabs
         if ($this->enableStickyTabs) {
             StickyTabsAsset::register($view);
             $opts = Json::encode($this->stickyTabsOptions);
+            $id = 'jQuery("#' . $this->containerOptions['id'] . ' > .nav")';
             $view->registerJs("{$id}.stickyTabs({$opts});");
         }
     }
