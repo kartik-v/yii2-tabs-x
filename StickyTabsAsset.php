@@ -21,6 +21,9 @@ use kartik\base\AssetBundle;
  */
 class StickyTabsAsset extends AssetBundle
 {
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         $this->setSourcePath(__DIR__ . '/assets');

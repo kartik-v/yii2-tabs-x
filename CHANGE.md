@@ -3,11 +3,14 @@ Change Log: `yii2-tabs-x`
 
 ## Version 1.2.3
 
-**Date:** 12-Feb-2016
+**Date:** 09-Sep-2016
 
 - (enh #33): Add branch alias for dev-master latest release.
 - (enh #35): Correct README for sticky tabs options usage.
 - (enh #36, #37): Add printable tabs functionality.
+- (enh #41, #42): Better detection of click element for correct sticky tabs initialization.
+- Add github contribution and issue/PR logging templates.
+- Enhance PHP Documentation for all classes and methods in the extension.
 
 
 ## Version 1.2.2

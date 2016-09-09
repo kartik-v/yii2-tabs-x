@@ -18,9 +18,9 @@ use yii\base\InvalidConfigException;
 use kartik\base\WidgetTrait;
 
 /**
- * An extended Bootstrap Tabs widget for Yii Framework 2 based on the bootstrap-tabs-x
- * plugin by Krajee. This widget enhances the default bootstrap tabs plugin with various
- * new styling enhancements.
+ * TabsX An extended Bootstrap Tabs navigation widget for Yii Framework 2 based on the
+ * [bootstrap-tabs-x plugin](http://plugins.krajee.com/tabs-x) by Krajee. This widget enhances the default bootstrap
+ * tabs plugin with various new styling enhancements.
  *
  * ```php
  * echo TabsX::widget([
@@ -65,80 +65,102 @@ class TabsX extends Tabs
     use WidgetTrait;
 
     /**
-     * Tabs direction / position
+     * Tabs position above
      */
     const POS_ABOVE = 'above';
-    const POS_BELOW = 'below';
-    const POS_LEFT = 'left';
-    const POS_RIGHT = 'right';
-
     /**
-     * Tab align
+     * Tabs position below
+     */
+    const POS_BELOW = 'below';
+    /**
+     * Tabs position on left
+     */
+    const POS_LEFT = 'left';
+    /**
+     * Tabs position on right
+     */
+    const POS_RIGHT = 'right';
+    /**
+     * Tab aligned to the left
      */
     const ALIGN_LEFT = 'left';
-    const ALIGN_CENTER = 'center';
-    const ALIGN_RIGHT = 'right';
-
     /**
-     * Tab content fixed heights
+     * Tab aligned to the center
+     */
+    const ALIGN_CENTER = 'center';
+    /**
+     * Tab aligned to the right
+     */
+    const ALIGN_RIGHT = 'right';
+    /**
+     * Extra small / tiny sized tabs widget
      */
     const SIZE_TINY = 'xs';
+    /**
+     * Small sized tabs widget
+     */
     const SIZE_SMALL = 'sm';
+    /**
+     * Meidum sized tabs widget
+     */
     const SIZE_MEDIUM = 'md';
+    /**
+     * Large sized tabs widget
+     */
     const SIZE_LARGE = 'lg';
 
     /**
      * @var string the position of the tabs with respect to the tab content Should be one of the [[TabsX::POS]]
-     *     constants. Defaults to [[TabsX::POS_ABOVE]].
+     * constants.
      */
     public $position = self::POS_ABOVE;
 
     /**
      * @var string the alignment of the tab headers with respect to the tab content. Should be one of the
-     *     [[TabsX::ALIGN]] constants. Defaults to [[TabsX::ALIGN_LEFT]].
+     * [[TabsX::ALIGN]] constants.
      */
     public $align = self::ALIGN_LEFT;
 
     /**
-     * @var boolean whether the tab content should be boxed within a bordered container. Defaults to `false`.
+     * @var boolean whether the tab content should be boxed within a bordered container.
      */
     public $bordered = false;
 
     /**
      * @var boolean whether the tab header text orientation should be rotated sideways. Applicable only when position
-     *     is one of [[TabsX::POS_LEFT]] or [[TabsX::POS_RIGHT]]. Defaults to `false`.
+     *     is one of [[TabsX::POS_LEFT]] or [[TabsX::POS_RIGHT]].
      */
     public $sideways = false;
 
     /**
-     * @var boolean whether to fade in each tab pane using the fade animation effect. Defaults to `true`.
+     * @var boolean whether to fade in each tab pane using the fade animation effect.
      */
     public $fade = true;
 
     /**
      * @var string whether the tab body content height should be of a fixed size. You should pass one of the
-     *     [[TabsX::SIZE]] constants. Applicable only when position is one of [[TabsX::POS_ABOVE]] or
-     *     [[TabsX::POS_BELOW]]. Defaults to empty string (meaning dynamic height).
+     * `TabsX::SIZE` constants. Applicable only when position is one of [[TabsX::POS_ABOVE]] or [[TabsX::POS_BELOW]].
+     * Defaults to empty string (meaning dynamic height).
      */
     public $height = '';
 
     /**
-     * @var array the HTML attributes for the TabsX container
+     * @var array the HTML attributes for the TabsX container.
      */
     public $containerOptions = [];
 
     /**
-     * @var bool whether to enable sticky tabs plugin to maintain tabs push state on browser back and forward
+     * @var boolean whether to enable sticky tabs plugin to maintain tabs push state on browser back and forward.
      */
     public $enableStickyTabs = false;
 
     /**
-     * @var array widget plugin options
+     * @var array bootstrap-tabs-x plugin options
      */
     public $pluginOptions = [];
 
     /**
-     * @var array sticky tabs plugin options
+     * @var array sticky tabs plugin options.
      */
     public $stickyTabsOptions = [];
 
@@ -164,7 +186,7 @@ class TabsX extends Tabs
     public $pluginDestroyJs;
 
     /**
-     * @var bool whether this tab widget should be printable.
+     * @var boolean whether this tab widget should be printable.
      */
     public $printable = true;
 
@@ -174,7 +196,7 @@ class TabsX extends Tabs
     public $printHeaderOptions = ['class' => 'h3'];
 
     /**
-     * @var bool whether the headers in print view will prepend the main label to the item label in case of dropdowns.
+     * @var boolean whether the headers in print view will prepend the main label to the item label in case of dropdowns.
      */
     public $printHeaderCrumbs = true;
 
@@ -200,6 +222,15 @@ class TabsX extends Tabs
 
     /**
      * @inheritdoc
+     */
+    public function run()
+    {
+        $this->initWidget();
+        echo $this->renderItems();
+    }
+
+    /**
+     * Initializes the widget settings.
      */
     public function initWidget()
     {
@@ -232,16 +263,7 @@ class TabsX extends Tabs
     }
 
     /**
-     * @inheritdoc
-     */
-    public function run()
-    {
-        $this->initWidget();
-        echo $this->renderItems();
-    }
-
-    /**
-     * Parse the CSS content to append based on condition
+     * Parse the CSS content to append based on condition.
      *
      * @param string $prop the css property
      * @param boolean $condition the validation to append the CSS class
@@ -254,8 +276,9 @@ class TabsX extends Tabs
     }
 
     /**
-     * Gets the label for an item configuration
-     * @param array $item
+     * Gets the label for an item configuration.
+     *
+     * @param array $item tabs item configuration
      *
      * @return string
      * @throws InvalidConfigException
@@ -352,7 +375,7 @@ class TabsX extends Tabs
     }
 
     /**
-     * Registers the needed assets
+     * Registers the assets for [[TabsX]] widget.
      */
     public function registerAssets()
     {
@@ -366,7 +389,7 @@ class TabsX extends Tabs
         if ($this->enableStickyTabs) {
             StickyTabsAsset::register($view);
             $opts = Json::encode($this->stickyTabsOptions);
-            $id = 'jQuery("#' . $this->containerOptions['id'] . ' > .nav")';
+            $id = 'jQuery("#' . $this->containerOptions['id'] . '>.nav")';
             $view->registerJs("{$id}.stickyTabs({$opts});");
         }
     }
