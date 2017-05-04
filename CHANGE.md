@@ -1,6 +1,12 @@
 Change Log: `yii2-tabs-x`
 =========================
 
+## Version 1.2.4
+
+**Date:** 04-May-2017
+
+- (bug #47): Add missing `hashVarLoadPosition` property.
+
 ## Version 1.2.3
 
 **Date:** 09-Sep-2016
