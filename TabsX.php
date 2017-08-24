@@ -309,7 +309,8 @@ class TabsX extends Tabs
         $headers = $panes = $labels = [];
 
         if (!$this->hasActiveTab() && !empty($this->items)) {
-            $this->items[0]['active'] = true;
+        	reset($this->items);
+            $this->items[key($this->items)]['active'] = true;
         }
 
         foreach ($this->items as $n => $item) {
