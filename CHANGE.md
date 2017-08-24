@@ -5,7 +5,7 @@ Change Log: `yii2-tabs-x`
 
 **Date:** 24-August-2017
 
-- (bug #51): Add missing `hashVarLoadPosition` property.
+- (bug #51): Fix setting active tab with named tab definition.
 
 ## Version 1.2.4
 
