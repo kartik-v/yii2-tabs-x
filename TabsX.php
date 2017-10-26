@@ -367,7 +367,10 @@ class TabsX extends Tabs
         }
         $outHeader = Html::tag('ul', implode("\n", $headers), $this->options);
         if ($this->renderTabContent) {
-            $outPane = Html::beginTag('div', ['class' => 'tab-content' . $this->getCss('printable', $this->printable)]);
+            if ($this->printable) {
+                Html::addCssClass($this->tabContentOptions, 'printable');
+            }
+            $outPane = Html::beginTag('div', $this->tabContentOptions);
             foreach ($panes as $i => $pane) {
                 if ($this->printable) {
                     $outPane .= Html::tag('div', ArrayHelper::getValue($labels, $i), $this->printHeaderOptions) . "\n";
