@@ -1,6 +1,13 @@
 Change Log: `yii2-tabs-x`
 =========================
 
+## Version 1.2.5
+
+**Date:** _under development_
+
+- Reorganize all source code in `src` directory.
+- (kartik-v/yii2-krajee-base#94): Refactor code and consolidate / optimize properties within traits.
+
 ## Version 1.2.4
 
 **Date:** 04-May-2017
@@ -8,7 +15,7 @@ Change Log: `yii2-tabs-x`
 - (bug #47): Add missing `hashVarLoadPosition` property.
 
 ## Version 1.2.3
-
+    
 **Date:** 09-Sep-2016
 
 - (enh #33): Add branch alias for dev-master latest release.

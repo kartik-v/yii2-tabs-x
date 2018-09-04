@@ -1,21 +1,19 @@
 <?php
 
 /**
- * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2016
+ * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2018
  * @package yii2-tabs-x
- * @version 1.2.3
+ * @version 1.2.5
  */
 
 namespace kartik\tabs;
 
-use Yii;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\Dropdown;
 use yii\bootstrap\Tabs;
 use yii\base\InvalidConfigException;
-use yii\web\View;
 use kartik\base\WidgetTrait;
 
 /**
@@ -156,35 +154,9 @@ class TabsX extends Tabs
     public $enableStickyTabs = false;
 
     /**
-     * @var array bootstrap-tabs-x plugin options
-     */
-    public $pluginOptions = [];
-
-    /**
      * @var array sticky tabs plugin options.
      */
     public $stickyTabsOptions = [];
-
-    /**
-     * @var array widget JQuery events. You must define events in event-name => event-function format for example:
-     * ~~~
-     * pluginEvents = [
-     *     "change" => "function() { log("change"); }",
-     *     "open" => "function() { log("open"); }",
-     * ];
-     * ~~~
-     */
-    public $pluginEvents = [];
-
-    /**
-     * @inheritdoc
-     */
-    public $pluginName = 'tabsX';
-
-    /**
-     * @inheritdoc
-     */
-    public $pluginDestroyJs;
 
     /**
      * @var boolean whether this tab widget should be printable.
@@ -205,31 +177,10 @@ class TabsX extends Tabs
      * @var string the crumb separator for the dropdown headers in the print view when `printHeaderCrumbs` is `true`
      */
     public $printCrumbSeparator = ' &raquo; ';
-    
-    /**
-     * @var integer the position where the client JS hash variables for the TabsX widget will be loaded. 
-     * Defaults to `View::POS_HEAD`. This can be set to `View::POS_READY` for specific scenarios like when
-     * rendering the widget via `renderAjax`.
-     */
-    public $hashVarLoadPosition = View::POS_HEAD;
-
-    /**
-     * @var string the hashed global variable name storing the pluginOptions
-     */
-    protected $_hashVar;
-
-    /**
-     * @var string the element's HTML5 data variable name storing the pluginOptions
-     */
-    protected $_dataVar;
-
-    /**
-     * @var string the Json encoded options
-     */
-    protected $_encOptions = '';
 
     /**
      * @inheritdoc
+     * @throws InvalidConfigException
      */
     public function run()
     {
@@ -242,6 +193,7 @@ class TabsX extends Tabs
      */
     public function initWidget()
     {
+        $this->pluginName = 'tabsX';
         if (empty($this->containerOptions['id'])) {
             $this->containerOptions['id'] = $this->options['id'] . '-container';
         }
@@ -299,10 +251,13 @@ class TabsX extends Tabs
         $encodeLabel = ArrayHelper::getValue($item, 'encode', $this->encodeLabels);
         return $encodeLabel ? Html::encode($item['label']) : $item['label'];
     }
+
     /**
      * Renders tab items as specified in [[items]].
      *
      * @return string the rendering result.
+     * @throws InvalidConfigException
+     * @throws \Exception
      */
     protected function renderItems()
     {

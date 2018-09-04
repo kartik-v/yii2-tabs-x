@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2016
+ * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2018
  * @package yii2-tabs-x
- * @version 1.2.3
+ * @version 1.2.5
  */
 
 namespace kartik\tabs;
@@ -25,7 +25,7 @@ class TabsXAsset extends AssetBundle
         'yii\bootstrap\BootstrapAsset',
         'yii\bootstrap\BootstrapPluginAsset',
     ];
-    
+
     public function init()
     {
         $this->setSourcePath('@vendor/kartik-v/bootstrap-tabs-x');
