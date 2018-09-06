@@ -8,7 +8,7 @@
 
 namespace kartik\tabs;
 
-use kartik\base\AssetBundle;
+use kartik\base\PluginAssetBundle;
 
 /**
  * Asset bundle for TabsX widget. Includes assets from bootstrap-tabs-x plugin by Krajee.
@@ -18,18 +18,12 @@ use kartik\base\AssetBundle;
  * @author Kartik Visweswaran <kartikv2@gmail.com>
  * @since 1.0
  */
-class TabsXAsset extends AssetBundle
+class TabsXAsset extends PluginAssetBundle
 {
-    public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
-        'yii\bootstrap\BootstrapPluginAsset',
-    ];
-
     public function init()
     {
         $this->setSourcePath('@vendor/kartik-v/bootstrap-tabs-x');
-        $this->setupAssets('css', ['css/bootstrap-tabs-x']);
+        $this->setupAssets('css', ['css/bootstrap-tabs-x' . ($this->isBs4() ? '-bs4' : '')]);
         $this->setupAssets('js', ['js/bootstrap-tabs-x']);
         parent::init();
     }

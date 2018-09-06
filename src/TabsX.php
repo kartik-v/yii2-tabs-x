@@ -8,13 +8,11 @@
 
 namespace kartik\tabs;
 
+use kartik\base\Widget;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap\Dropdown;
-use yii\bootstrap\Tabs;
 use yii\base\InvalidConfigException;
-use kartik\base\WidgetTrait;
 
 /**
  * TabsX An extended Bootstrap Tabs navigation widget for Yii Framework 2 based on the
@@ -59,10 +57,8 @@ use kartik\base\WidgetTrait;
  * @author Kartik Visweswaran <kartikv2@gmail.com>
  * @since 1.0
  */
-class TabsX extends Tabs
+class TabsX extends Widget
 {
-    use WidgetTrait;
-
     /**
      * Tabs position above
      */
@@ -107,6 +103,90 @@ class TabsX extends Tabs
      * Large sized tabs widget
      */
     const SIZE_LARGE = 'lg';
+    /**
+     * @var array list of tabs in the tabs widget. Each array element represents a single
+     * tab with the following structure:
+     *
+     * - label: string, required, the tab header label.
+     * - encode: bool, optional, whether this label should be HTML-encoded. This param will override
+     *   global `$this->encodeLabels` param.
+     * - headerOptions: array, optional, the HTML attributes of the tab header.
+     * - linkOptions: array, optional, the HTML attributes of the tab header link tags.
+     * - content: string, optional, the content (HTML) of the tab pane.
+     * - url: string, optional, an external URL. When this is specified, clicking on this tab will bring
+     *   the browser to this URL. This option is available since version 2.0.4.
+     * - options: array, optional, the HTML attributes of the tab pane container.
+     * - active: bool, optional, whether this item tab header and pane should be active. If no item is marked as
+     *   'active' explicitly - the first one will be activated.
+     * - visible: bool, optional, whether the item tab header and pane should be visible or not. Defaults to true.
+     * - items: array, optional, can be used instead of `content` to specify a dropdown items
+     *   configuration array. Each item can hold three extra keys, besides the above ones:
+     *     * active: bool, optional, whether the item tab header and pane should be visible or not.
+     *     * content: string, required if `items` is not set. The content (HTML) of the tab pane.
+     *     * contentOptions: optional, array, the HTML attributes of the tab content container.
+     */
+    public $items = [];
+
+    /**
+     * @var array list of HTML attributes for the item container tags. This will be overwritten
+     * by the "options" set in individual [[items]]. The following special options are recognized:
+     *
+     * - tag: string, defaults to "div", the tag name of the item container tags.
+     *
+     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     */
+    public $itemOptions = [];
+
+    /**
+     * @var array list of HTML attributes for the header container tags. This will be overwritten
+     * by the "headerOptions" set in individual [[items]].
+     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     */
+    public $headerOptions = [];
+
+    /**
+     * @var array list of HTML attributes for the tab header link tags. This will be overwritten
+     * by the "linkOptions" set in individual [[items]].
+     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     */
+    public $linkOptions = [];
+
+    /**
+     * @var bool whether the labels for header items should be HTML-encoded.
+     */
+    public $encodeLabels = true;
+
+    /**
+     * @var string specifies the Bootstrap tab styling.
+     */
+    public $navType = 'nav-tabs';
+
+    /**
+     * @var bool whether to render the `tab-content` container and its content. You may set this property
+     * to be false so that you can manually render `tab-content` yourself in case your tab contents are complex.
+     */
+    public $renderTabContent = true;
+
+    /**
+     * @var array list of HTML attributes for the `tab-content` container. This will always contain the CSS class `tab-content`.
+     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     */
+    public $tabContentOptions = [];
+
+    /**
+     * @var string name of a class to use for rendering dropdowns withing this widget. Defaults to [[Dropdown]].
+     */
+    public $dropdownClass;
+
+    /**
+     * @var array the options for the Bootstrap Tabs JS plugin.
+     */
+    public $tabsPluginOptions = [];
+
+    /**
+     * @var array the event handlers for the Bootstrap Tabs JS plugin.
+     */
+    public $tabsPluginEvents = [];
 
     /**
      * @var string the position of the tabs with respect to the tab content Should be one of the [[TabsX::POS]]
@@ -166,7 +246,7 @@ class TabsX extends Tabs
     /**
      * @var array the HTML attributes for the tab content header in print view.
      */
-    public $printHeaderOptions = ['class' => 'h3'];
+    public $printHeaderOptions = ['class' => 'h4'];
 
     /**
      * @var boolean whether the headers in print view will prepend the main label to the item label in case of dropdowns.
@@ -190,36 +270,50 @@ class TabsX extends Tabs
 
     /**
      * Initializes the widget settings.
+     * @throws InvalidConfigException
      */
     public function initWidget()
     {
         $this->pluginName = 'tabsX';
+        $isBs4 = $this->isBs4();
+        if (!isset($this->dropdownClass)) {
+            $this->dropdownClass = $isBs4 ? 'kartik\bs4dropdown\Dropdown' : 'yii\bootstrap\Dropdown';
+        }
+        Html::addCssClass($this->containerOptions, 'tabs-x');
         if (empty($this->containerOptions['id'])) {
             $this->containerOptions['id'] = $this->options['id'] . '-container';
         }
         if (ArrayHelper::getValue($this->containerOptions, 'data-enable-cache', true) === false) {
             $this->containerOptions['data-enable-cache'] = "false";
         }
+        $widOpts = [
+            'options' => $this->options,
+            'clientOptions' => $this->tabsPluginOptions,
+            'clientEvents' => $this->tabsPluginEvents,
+        ];
+        $tabsPlugin = $isBs4 ? new TabsPluginBS4($widOpts) : new TabsPluginBS3($widOpts);
+        $tabsPlugin->register();
         $this->registerAssets();
-        Html::addCssClass($this->options, 'nav ' . $this->navType);
+        Html::addCssClass($this->options, ['nav', $this->navType]);
+        Html::addCssClass($this->tabContentOptions, 'tab-content');
         if ($this->printable) {
-            Html::addCssClass($this->options, 'hidden-print');
+            Html::addCssClass($this->options, $isBs4 ? 'd-print-none' : 'hidden-print');
         }
         $this->options['role'] = 'tablist';
-        $css = self::getCss("tabs-{$this->position}", $this->position != null) .
-            self::getCss("tab-align-{$this->align}", $this->align != null) .
-            self::getCss("tab-bordered", $this->bordered) .
-            self::getCss(
+        $css = static::getCss("tabs-{$this->position}", $this->position != null) .
+            static::getCss("tab-align-{$this->align}", $this->align != null) .
+            static::getCss("tab-bordered", $this->bordered) .
+            static::getCss(
                 "tab-sideways",
                 $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)
             ) .
-            self::getCss(
+            static::getCss(
                 "tab-height-{$this->height}",
                 $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW)
             ) .
             ' ' . ArrayHelper::getValue($this->pluginOptions, 'addCss', 'tabs-krajee');
         Html::addCssClass($this->containerOptions, $css);
-        Html::addCssClass($this->printHeaderOptions, 'visible-print-block');
+        Html::addCssClass($this->printHeaderOptions, $isBs4 ? 'd-none d-print-block' : 'visible-print-block');
     }
 
     /**
@@ -253,6 +347,38 @@ class TabsX extends Tabs
     }
 
     /**
+     * @return bool if there's active tab defined
+     */
+    protected function hasActiveTab()
+    {
+        foreach ($this->items as $item) {
+            if (isset($item['active']) && $item['active'] === true) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Sets the first visible tab as active.
+     *
+     * This method activates the first tab that is visible and
+     * not explicitly set to inactive (`'active' => false`).
+     */
+    protected function activateFirstVisibleTab()
+    {
+        foreach ($this->items as $i => $item) {
+            $active = ArrayHelper::getValue($item, 'active', null);
+            $visible = ArrayHelper::getValue($item, 'visible', true);
+            if ($visible && $active !== false) {
+                $this->items[$i]['active'] = true;
+                return;
+            }
+        }
+    }
+
+    /**
      * Renders tab items as specified in [[items]].
      *
      * @return string the rendering result.
@@ -262,9 +388,9 @@ class TabsX extends Tabs
     protected function renderItems()
     {
         $headers = $panes = $labels = [];
-
-        if (!$this->hasActiveTab() && !empty($this->items)) {
-            $this->items[0]['active'] = true;
+        $isBs4 = $this->isBs4();
+        if (!$this->hasActiveTab()) {
+            $this->activateFirstVisibleTab();
         }
 
         foreach ($this->items as $n => $item) {
@@ -274,24 +400,39 @@ class TabsX extends Tabs
             $label = $this->getLabel($item);
             $headerOptions = array_merge($this->headerOptions, ArrayHelper::getValue($item, 'headerOptions', []));
             $linkOptions = array_merge($this->linkOptions, ArrayHelper::getValue($item, 'linkOptions', []));
-            $content = ArrayHelper::getValue($item, 'content', '');
+            if ($isBs4) {
+                Html::addCssClass($linkOptions, 'nav-link');
+            }
+
             if (isset($item['items'])) {
                 foreach ($item['items'] as $subItem) {
                     $subLabel = $this->getLabel($subItem);
                     $labels[] = $this->printHeaderCrumbs ? $label . $this->printCrumbSeparator . $subLabel : $subLabel;
                 }
-                $label .= ' <b class="caret"></b>';
+                if (!$isBs4) {
+                    $label .= ' <b class="caret"></b>';
+                }
                 Html::addCssClass($headerOptions, 'dropdown');
                 if ($this->renderDropdown($n, $item['items'], $panes)) {
-                    Html::addCssClass($headerOptions, 'active');
+                    if ($isBs4) {
+                        Html::addCssClass($linkOptions, 'active');
+                    } else {
+                        Html::addCssClass($headerOptions, 'active');
+                    }
                 }
                 Html::addCssClass($linkOptions, 'dropdown-toggle');
+
                 $linkOptions['data-toggle'] = 'dropdown';
+
+                /**
+                 * @var \yii\bootstrap\Dropdown $dropdownClass
+                 */
+                $dropdownClass = $this->dropdownClass;
                 $header = Html::a($label, "#", $linkOptions) . "\n"
-                    . Dropdown::widget([
+                    . $dropdownClass::widget([
                         'items' => $item['items'],
                         'clientOptions' => false,
-                        'view' => $this->getView()
+                        'view' => $this->getView(),
                     ]);
             } else {
                 $labels[] = $label;
@@ -300,29 +441,46 @@ class TabsX extends Tabs
                 $css = 'tab-pane';
                 $isActive = ArrayHelper::remove($item, 'active');
                 if ($this->fade) {
-                    $css = $isActive ? "{$css} fade in" : "{$css} fade";
+                    $css = $isActive ? [$css, 'fade', $isBs4 ? 'show' : 'in'] : [$css, 'fade'];
                 }
                 Html::addCssClass($options, $css);
                 if ($isActive) {
-                    Html::addCssClass($options, 'active');
-                    Html::addCssClass($headerOptions, 'active');
+                    if ($isBs4) {
+                        Html::addCssClass($linkOptions, 'active');
+                        $css = ['active', 'show'];
+                    } else {
+                        Html::addCssClass($headerOptions, 'active');
+                        $css = 'active';
+                    }
+                    Html::addCssClass($options, $css);
                 }
                 if (isset($item['url'])) {
                     $header = Html::a($label, $item['url'], $linkOptions);
                 } else {
                     $linkOptions['data-toggle'] = 'tab';
                     $linkOptions['role'] = 'tab';
+                    if (!isset($linkOptions['aria-selected'])) {
+                        $linkOptions['aria-selected'] = 'false';
+                    }
+                    $linkOptions['aria-controls'] = $options['id'];
                     $header = Html::a($label, '#' . $options['id'], $linkOptions);
                 }
                 if ($this->renderTabContent) {
-                    $panes[] = Html::tag('div', $content, $options);
+                    $tag = ArrayHelper::remove($options, 'tag', 'div');
+                    $panes[] = Html::tag($tag, isset($item['content']) ? $item['content'] : '', $options);
                 }
+            }
+            if ($isBs4) {
+                Html::addCssClass($headerOptions, 'nav-item');
             }
             $headers[] = Html::tag('li', $header, $headerOptions);
         }
+
         $outHeader = Html::tag('ul', implode("\n", $headers), $this->options);
+
         if ($this->renderTabContent) {
-            $outPane = Html::beginTag('div', ['class' => 'tab-content' . $this->getCss('printable', $this->printable)]);
+            Html::addCssClass($this->tabContentOptions, static::getCss('printable', $this->printable));
+            $outPane = Html::beginTag('div', $this->tabContentOptions);
             foreach ($panes as $i => $pane) {
                 if ($this->printable) {
                     $outPane .= Html::tag('div', ArrayHelper::getValue($labels, $i), $this->printHeaderOptions) . "\n";
@@ -338,12 +496,62 @@ class TabsX extends Tabs
     }
 
     /**
+     * Normalizes dropdown item options by removing tab specific keys `content` and `contentOptions`, and also
+     * configure `panes` accordingly.
+     * @param string $itemNumber number of the item
+     * @param array $items the dropdown items configuration.
+     * @param array $panes the panes reference array.
+     * @return bool whether any of the dropdown items is `active` or not.
+     * @throws InvalidConfigException
+     */
+    protected function renderDropdown($itemNumber, &$items, &$panes)
+    {
+        $itemActive = false;
+
+        foreach ($items as $n => &$item) {
+            if (is_string($item)) {
+                continue;
+            }
+            if (isset($item['visible']) && !$item['visible']) {
+                continue;
+            }
+            if (!(array_key_exists('content', $item) xor array_key_exists('url', $item))) {
+                throw new InvalidConfigException("Either the 'content' or the 'url' option is required, but only one can be set.");
+            }
+            if (array_key_exists('url', $item)) {
+                continue;
+            }
+
+            $content = ArrayHelper::remove($item, 'content');
+            $options = ArrayHelper::remove($item, 'contentOptions', []);
+            Html::addCssClass($options, ['widget' => 'tab-pane']);
+            if (ArrayHelper::remove($item, 'active')) {
+                Html::addCssClass($options, 'active');
+                Html::addCssClass($item['options'], 'active');
+                $itemActive = true;
+            }
+
+            $options['id'] = ArrayHelper::getValue($options, 'id',
+                $this->options['id'] . '-dd' . $itemNumber . '-tab' . $n);
+            $item['url'] = '#' . $options['id'];
+            if (!isset($item['linkOptions']['data-toggle'])) {
+                $item['linkOptions']['data-toggle'] = 'tab';
+            }
+            $panes[] = Html::tag('div', $content, $options);
+
+            unset($item);
+        }
+
+        return $itemActive;
+    }
+
+    /**
      * Registers the assets for [[TabsX]] widget.
      */
     public function registerAssets()
     {
         $view = $this->getView();
-        TabsXAsset::register($view);
+        TabsXAsset::registerBundle($view, $this->bsVersion);
         if ($this->printable) {
             $view->registerCss('@media print { .tab-content.printable > .tab-pane { display: block; opacity: 1; }}');
         }
@@ -356,4 +564,5 @@ class TabsX extends Tabs
             $view->registerJs("{$id}.stickyTabs({$opts});");
         }
     }
+
 }

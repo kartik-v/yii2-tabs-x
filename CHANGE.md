@@ -3,8 +3,9 @@ Change Log: `yii2-tabs-x`
 
 ## Version 1.2.5
 
-**Date:** _under development_
+**Date:** 06-Sep-2018
 
+- Updates to support Bootstrap 4.x.
 - Reorganize all source code in `src` directory.
 - (kartik-v/yii2-krajee-base#94): Refactor code and consolidate / optimize properties within traits.
 
