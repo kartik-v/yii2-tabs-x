@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2018
  * @package yii2-tabs-x
- * @version 1.2.5
+ * @version 1.2.6
  */
 
 namespace kartik\tabs;

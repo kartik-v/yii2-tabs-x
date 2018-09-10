@@ -17,7 +17,7 @@
 
         // Show the tab corresponding with the hash in the URL, or the first tab.
         var showTabFromHash = function() {
-          var hash = settings.selectorAttribute == "href" ? window.location.hash : window.location.hash.substring(1);
+          var hash = settings.selectorAttribute === "href" ? window.location.hash : window.location.hash.substring(1);
           var selector = hash ? 'a[' + settings.selectorAttribute +'="' + hash + '"]' : settings.initialTab;
           $(selector, context).tab('show');
           setTimeout(backToTop, 1);

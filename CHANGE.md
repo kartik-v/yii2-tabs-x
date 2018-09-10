@@ -1,6 +1,12 @@
 Change Log: `yii2-tabs-x`
 =========================
 
+## Version 1.2.6
+
+**Date:** 10-Sep-2018
+
+- (bug #63): Correct and remove unnecessary bootstrap tabs plugin registration.
+
 ## Version 1.2.5
 
 **Date:** 06-Sep-2018

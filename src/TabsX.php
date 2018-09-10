@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2018
  * @package yii2-tabs-x
- * @version 1.2.5
+ * @version 1.2.6
  */
 
 namespace kartik\tabs;
@@ -179,16 +179,6 @@ class TabsX extends Widget
     public $dropdownClass;
 
     /**
-     * @var array the options for the Bootstrap Tabs JS plugin.
-     */
-    public $tabsPluginOptions = [];
-
-    /**
-     * @var array the event handlers for the Bootstrap Tabs JS plugin.
-     */
-    public $tabsPluginEvents = [];
-
-    /**
      * @var string the position of the tabs with respect to the tab content Should be one of the [[TabsX::POS]]
      * constants.
      */
@@ -286,13 +276,6 @@ class TabsX extends Widget
         if (ArrayHelper::getValue($this->containerOptions, 'data-enable-cache', true) === false) {
             $this->containerOptions['data-enable-cache'] = "false";
         }
-        $widOpts = [
-            'options' => $this->options,
-            'clientOptions' => $this->tabsPluginOptions,
-            'clientEvents' => $this->tabsPluginEvents,
-        ];
-        $tabsPlugin = $isBs4 ? new TabsPluginBS4($widOpts) : new TabsPluginBS3($widOpts);
-        $tabsPlugin->register();
         $this->registerAssets();
         Html::addCssClass($this->options, ['nav', $this->navType]);
         Html::addCssClass($this->tabContentOptions, 'tab-content');
@@ -553,7 +536,7 @@ class TabsX extends Widget
         $view = $this->getView();
         TabsXAsset::registerBundle($view, $this->bsVersion);
         if ($this->printable) {
-            $view->registerCss('@media print { .tab-content.printable > .tab-pane { display: block; opacity: 1; }}');
+            $view->registerCss('@media print{.tab-content.printable > .tab-pane{display:block;opacity:1;}}');
         }
         $id = 'jQuery("#' . $this->containerOptions['id'] . '")';
         $this->registerPlugin($this->pluginName, $id);
