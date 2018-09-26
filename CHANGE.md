@@ -1,6 +1,12 @@
 Change Log: `yii2-tabs-x`
 =========================
 
+## Version 1.2.7
+
+**Date:** 26-Sep-2018
+
+- Enhancements in parsing Bootstrap CSS classes (ref: kartik-v/yii2-krajee-base#100).
+
 ## Version 1.2.6
 
 **Date:** 10-Sep-2018

@@ -3,7 +3,7 @@
 /**
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2018
  * @package yii2-tabs-x
- * @version 1.2.6
+ * @version 1.2.7
  */
 
 namespace kartik\tabs;
@@ -87,22 +87,7 @@ class TabsX extends Widget
      * Tab aligned to the right
      */
     const ALIGN_RIGHT = 'right';
-    /**
-     * Extra small / tiny sized tabs widget
-     */
-    const SIZE_TINY = 'xs';
-    /**
-     * Small sized tabs widget
-     */
-    const SIZE_SMALL = 'sm';
-    /**
-     * Meidum sized tabs widget
-     */
-    const SIZE_MEDIUM = 'md';
-    /**
-     * Large sized tabs widget
-     */
-    const SIZE_LARGE = 'lg';
+
     /**
      * @var array list of tabs in the tabs widget. Each array element represents a single
      * tab with the following structure:
@@ -280,7 +265,7 @@ class TabsX extends Widget
         Html::addCssClass($this->options, ['nav', $this->navType]);
         Html::addCssClass($this->tabContentOptions, 'tab-content');
         if ($this->printable) {
-            Html::addCssClass($this->options, $isBs4 ? 'd-print-none' : 'hidden-print');
+            $this->addCssClass($this->options, self::BS_HIDDEN_PRINT);
         }
         $this->options['role'] = 'tablist';
         $css = static::getCss("tabs-{$this->position}", $this->position != null) .
@@ -296,7 +281,7 @@ class TabsX extends Widget
             ) .
             ' ' . ArrayHelper::getValue($this->pluginOptions, 'addCss', 'tabs-krajee');
         Html::addCssClass($this->containerOptions, $css);
-        Html::addCssClass($this->printHeaderOptions, $isBs4 ? 'd-none d-print-block' : 'visible-print-block');
+        $this->addCssClass($this->printHeaderOptions, self::BS_VISIBLE_PRINT);
     }
 
     /**
@@ -383,9 +368,7 @@ class TabsX extends Widget
             $label = $this->getLabel($item);
             $headerOptions = array_merge($this->headerOptions, ArrayHelper::getValue($item, 'headerOptions', []));
             $linkOptions = array_merge($this->linkOptions, ArrayHelper::getValue($item, 'linkOptions', []));
-            if ($isBs4) {
-                Html::addCssClass($linkOptions, 'nav-link');
-            }
+            $this->addCssClass($linkOptions, self::BS_NAV_LINK);
 
             if (isset($item['items'])) {
                 foreach ($item['items'] as $subItem) {
@@ -424,7 +407,7 @@ class TabsX extends Widget
                 $css = 'tab-pane';
                 $isActive = ArrayHelper::remove($item, 'active');
                 if ($this->fade) {
-                    $css = $isActive ? [$css, 'fade', $isBs4 ? 'show' : 'in'] : [$css, 'fade'];
+                    $css = $isActive ? [$css, 'fade', $this->getCssClass(self::BS_SHOW)] : [$css, 'fade'];
                 }
                 Html::addCssClass($options, $css);
                 if ($isActive) {
@@ -453,9 +436,7 @@ class TabsX extends Widget
                     $panes[] = Html::tag($tag, isset($item['content']) ? $item['content'] : '', $options);
                 }
             }
-            if ($isBs4) {
-                Html::addCssClass($headerOptions, 'nav-item');
-            }
+            $this->addCssClass($headerOptions, self::BS_NAV_ITEM);
             $headers[] = Html::tag('li', $header, $headerOptions);
         }
 
