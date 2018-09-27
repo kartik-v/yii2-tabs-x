@@ -103,4 +103,4 @@ echo TabsX::widget([
 
 ## License
 
-**yii2-tabs-x** is released under the BSD 3-Clause License. See the bundled `LICENSE.md` for details.
+**yii2-tabs-x** is released under the BSD-3-Clause License. See the bundled `LICENSE.md` for details.
