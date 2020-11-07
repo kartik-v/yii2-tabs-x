@@ -23,7 +23,6 @@ class TabsXAsset extends PluginAssetBundle
     public function init()
     {
         $this->setSourcePath('@vendor/kartik-v/bootstrap-tabs-x');
-        $this->setupAssets('css', ['css/bootstrap-tabs-x' . ($this->isBs4() ? '-bs4' : '')]);
         $this->setupAssets('js', ['js/bootstrap-tabs-x']);
         parent::init();
     }
