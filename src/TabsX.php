@@ -1,13 +1,14 @@
 <?php
 
 /**
- * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2018
+ * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2021
  * @package yii2-tabs-x
  * @version 1.2.8
  */
 
 namespace kartik\tabs;
 
+use Exception;
 use kartik\base\Widget;
 use yii\helpers\Html;
 use yii\helpers\Json;
@@ -234,6 +235,26 @@ class TabsX extends Widget
     public $printCrumbSeparator = ' &raquo; ';
 
     /**
+     * @var bool whether the [[position]] is set to [[TabsX::POS_ABOVE]]
+     */
+    protected $_isAbove = false;
+
+    /**
+     * @var bool whether the [[position]] is set to [[TabsX::POS_BELOW]]
+     */
+    protected $_isBelow = false;
+
+    /**
+     * @var bool whether the [[position]] is set to [[TabsX::POS_LEFT]]
+     */
+    protected $_isLeft = false;
+
+    /**
+     * @var bool whether the [[position]] is set to [[TabsX::POS_RIGHT]]
+     */
+    protected $_isRight = false;
+
+    /**
      * @inheritdoc
      * @throws InvalidConfigException
      */
@@ -250,9 +271,12 @@ class TabsX extends Widget
     public function initWidget()
     {
         $this->pluginName = 'tabsX';
-        $isBs4 = $this->isBs4();
+        $this->_isAbove = $this->position == self::POS_ABOVE;
+        $this->_isBelow = $this->position == self::POS_BELOW;
+        $this->_isLeft = $this->position == self::POS_LEFT;
+        $this->_isRight = $this->position == self::POS_RIGHT;
         if (!isset($this->dropdownClass)) {
-            $this->dropdownClass = $isBs4 ? 'kartik\bs4dropdown\Dropdown' : 'yii\bootstrap\Dropdown';
+            $this->dropdownClass = $this->getDropdownClass();
         }
         Html::addCssClass($this->containerOptions, 'tabs-x');
         if (empty($this->containerOptions['id'])) {
@@ -271,15 +295,9 @@ class TabsX extends Widget
         $css = static::getCss("tabs-{$this->position}", $this->position != null) .
             static::getCss("tab-align-{$this->align}", $this->align != null) .
             static::getCss("tab-bordered", $this->bordered) .
-            static::getCss(
-                "tab-sideways",
-                $this->sideways && ($this->position == self::POS_LEFT || $this->position == self::POS_RIGHT)
-            ) .
-            static::getCss(
-                "tab-height-{$this->height}",
-                $this->height != null && ($this->position == self::POS_ABOVE || $this->position == self::POS_BELOW)
-            ) .
-            ' ' . ArrayHelper::getValue($this->pluginOptions, 'addCss', 'tabs-krajee');
+            static::getCss("tab-sideways", $this->sideways && ($this->_isLeft || $this->_isRight)) .
+            static::getCss("tab-height-{$this->height}", $this->height != null && ($this->_isAbove || $this->_isBelow)) .
+            ' ' . ArrayHelper::getValue($this->pluginOptions, 'addCss', ($this->isBs(3) ?  'tabs-krajee' : ''));
         Html::addCssClass($this->containerOptions, $css);
         $this->addCssClass($this->printHeaderOptions, self::BS_VISIBLE_PRINT);
     }
@@ -311,7 +329,8 @@ class TabsX extends Widget
             throw new InvalidConfigException("The 'label' option is required.");
         }
         $encodeLabel = ArrayHelper::getValue($item, 'encode', $this->encodeLabels);
-        return $encodeLabel ? Html::encode($item['label']) : $item['label'];
+        $label = $encodeLabel ? Html::encode($item['label']) : $item['label'];
+        return Html::tag('span', $label, ['class' => 'nav-link-text']);
     }
 
     /**
@@ -337,7 +356,7 @@ class TabsX extends Widget
     protected function activateFirstVisibleTab()
     {
         foreach ($this->items as $i => $item) {
-            $active = ArrayHelper::getValue($item, 'active', null);
+            $active = ArrayHelper::getValue($item, 'active');
             $visible = ArrayHelper::getValue($item, 'visible', true);
             if ($visible && $active !== false) {
                 $this->items[$i]['active'] = true;
@@ -351,16 +370,17 @@ class TabsX extends Widget
      *
      * @return string the rendering result.
      * @throws InvalidConfigException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function renderItems()
     {
         $headers = $panes = $labels = [];
-        $isBs4 = $this->isBs4();
+        $notBs3 = !$this->isBs(3);
+        $isBs5 = $this->isBs(5);
         if (!$this->hasActiveTab()) {
             $this->activateFirstVisibleTab();
         }
-
+        $data = $isBs5 ? 'data-bs' : 'data';
         foreach ($this->items as $n => $item) {
             if (!ArrayHelper::remove($item, 'visible', true)) {
                 continue;
@@ -375,12 +395,12 @@ class TabsX extends Widget
                     $subLabel = $this->getLabel($subItem);
                     $labels[] = $this->printHeaderCrumbs ? $label . $this->printCrumbSeparator . $subLabel : $subLabel;
                 }
-                if (!$isBs4) {
+                if (!$notBs3) {
                     $label .= ' <b class="caret"></b>';
                 }
                 Html::addCssClass($headerOptions, 'dropdown');
                 if ($this->renderDropdown($n, $item['items'], $panes)) {
-                    if ($isBs4) {
+                    if ($notBs3) {
                         Html::addCssClass($linkOptions, 'active');
                     } else {
                         Html::addCssClass($headerOptions, 'active');
@@ -388,10 +408,17 @@ class TabsX extends Widget
                 }
                 Html::addCssClass($linkOptions, 'dropdown-toggle');
 
-                $linkOptions['data-toggle'] = 'dropdown';
+                $linkOptions["{$data}-toggle"] = 'dropdown';
+                if ($notBs3 && $this->sideways && ($this->_isLeft || $this->_isRight) && !isset($linkOptions["{$data}-offset"])) {
+                    if ($isBs5) {
+                        $linkOptions["{$data}-offset"] = $this->_isLeft ? '35,-120' : '-35,-82';
+                    } else {
+                        $linkOptions["{$data}-offset"] = $this->_isLeft ? '35,-82' : '-160,-120';
+                    }
+                }
 
                 /**
-                 * @var \yii\bootstrap\Dropdown $dropdownClass
+                 * @var Widget $dropdownClass
                  */
                 $dropdownClass = $this->dropdownClass;
                 $header = Html::a($label, "#", $linkOptions) . "\n"
@@ -411,7 +438,7 @@ class TabsX extends Widget
                 }
                 Html::addCssClass($options, $css);
                 if ($isActive) {
-                    if ($isBs4) {
+                    if ($notBs3) {
                         Html::addCssClass($linkOptions, 'active');
                         $css = ['active', 'show'];
                     } else {
@@ -423,7 +450,7 @@ class TabsX extends Widget
                 if (isset($item['url'])) {
                     $header = Html::a($label, $item['url'], $linkOptions);
                 } else {
-                    $linkOptions['data-toggle'] = 'tab';
+                    $linkOptions["{$data}-toggle"] = 'tab';
                     $linkOptions['role'] = 'tab';
                     if (!isset($linkOptions['aria-selected'])) {
                         $linkOptions['aria-selected'] = 'false';
@@ -433,7 +460,7 @@ class TabsX extends Widget
                 }
                 if ($this->renderTabContent) {
                     $tag = ArrayHelper::remove($options, 'tag', 'div');
-                    $panes[] = Html::tag($tag, isset($item['content']) ? $item['content'] : '', $options);
+                    $panes[] = Html::tag($tag, $item['content'] ?? '', $options);
                 }
             }
             $this->addCssClass($headerOptions, self::BS_NAV_ITEM);
@@ -452,7 +479,7 @@ class TabsX extends Widget
                 $outPane .= "$pane\n";
             }
             $outPane .= Html::endTag('div');
-            $tabs = $this->position == self::POS_BELOW ? $outPane . "\n" . $outHeader : $outHeader . "\n" . $outPane;
+            $tabs = $this->_isBelow || ($this->_isRight && $notBs3) ? "{$outPane}\n{$outHeader}" : "{$outHeader}\n{$outPane}";
         } else {
             $tabs = $outHeader;
         }
@@ -471,6 +498,7 @@ class TabsX extends Widget
     protected function renderDropdown($itemNumber, &$items, &$panes)
     {
         $itemActive = false;
+        $data = $this->isBs(5) ? 'data-bs' : 'data';
 
         foreach ($items as $n => &$item) {
             if (is_string($item)) {
@@ -498,8 +526,8 @@ class TabsX extends Widget
             $options['id'] = ArrayHelper::getValue($options, 'id',
                 $this->options['id'] . '-dd' . $itemNumber . '-tab' . $n);
             $item['url'] = '#' . $options['id'];
-            if (!isset($item['linkOptions']['data-toggle'])) {
-                $item['linkOptions']['data-toggle'] = 'tab';
+            if (!isset($item['linkOptions']["{$data}-toggle"])) {
+                $item['linkOptions']["{$data}-toggle"] = 'tab';
             }
             $panes[] = Html::tag('div', $content, $options);
 
