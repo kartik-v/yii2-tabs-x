@@ -128,7 +128,7 @@ class TabsX extends Widget
      * by the "headerOptions" set in individual [[items]].
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $headerOptions = [];
+    public $headerOptions = ['role' => 'presentation'];
 
     /**
      * @var array list of HTML attributes for the tab header link tags. This will be overwritten
@@ -421,8 +421,7 @@ class TabsX extends Widget
                  * @var Widget $dropdownClass
                  */
                 $dropdownClass = $this->dropdownClass;
-                //$header = Html::a($label, "#", $linkOptions) . "\n"
-                $header = Html::tag('span', $label, $linkOptions) . "\n"
+                $header = Html::a($label, "#", $linkOptions) . "\n"
                     . $dropdownClass::widget([
                         'items' => $item['items'],
                         'clientOptions' => false,
@@ -449,17 +448,15 @@ class TabsX extends Widget
                     Html::addCssClass($options, $css);
                 }
                 if (isset($item['url'])) {
-                    //$header = Html::a($label, $item['url'], $linkOptions);
-                    $header = Html::tag('span', $label, $linkOptions);
+                    $header = Html::a($label, $item['url'], $linkOptions);
                 } else {
                     $linkOptions["{$data}-toggle"] = 'tab';
-                    $headerOptions['role'] = 'tab';
-                    if (!isset($headerOptions['aria-selected'])) {
-                        $headerOptions['aria-selected'] = 'false';
+                    $linkOptions['role'] = 'tab';
+                    if (!isset($linkOptions['aria-selected'])) {
+                        $linkOptions['aria-selected'] = 'false';
                     }
                     $linkOptions['aria-controls'] = $options['id'];
-                    //$header = Html::a($label, '#' . $options['id'], $linkOptions);
-                    $header = Html::tag('span', $label, $linkOptions);
+                    $header = Html::a($label, '#' . $options['id'], $linkOptions);
                 }
                 if ($this->renderTabContent) {
                     $tag = ArrayHelper::remove($options, 'tag', 'div');
