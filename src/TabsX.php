@@ -452,8 +452,8 @@ class TabsX extends Widget
                 } else {
                     $linkOptions["{$data}-toggle"] = 'tab';
                     $headerOptions['role'] = 'tab';
-                    if (!isset($linkOptions['aria-selected'])) {
-                        $linkOptions['aria-selected'] = 'false';
+                    if (!isset($headerOptions['aria-selected'])) {
+                        $headerOptions['aria-selected'] = 'false';
                     }
                     $linkOptions['aria-controls'] = $options['id'];
                     $header = Html::a($label, '#' . $options['id'], $linkOptions);
