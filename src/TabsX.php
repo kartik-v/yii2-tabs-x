@@ -421,7 +421,8 @@ class TabsX extends Widget
                  * @var Widget $dropdownClass
                  */
                 $dropdownClass = $this->dropdownClass;
-                $header = Html::a($label, "#", $linkOptions) . "\n"
+                //$header = Html::a($label, "#", $linkOptions) . "\n"
+                $header = Html::tag('span', $label, $linkOptions) . "\n"
                     . $dropdownClass::widget([
                         'items' => $item['items'],
                         'clientOptions' => false,
@@ -448,7 +449,8 @@ class TabsX extends Widget
                     Html::addCssClass($options, $css);
                 }
                 if (isset($item['url'])) {
-                    $header = Html::a($label, $item['url'], $linkOptions);
+                    //$header = Html::a($label, $item['url'], $linkOptions);
+                    $header = Html::tag('span', $label, $linkOptions);
                 } else {
                     $linkOptions["{$data}-toggle"] = 'tab';
                     $headerOptions['role'] = 'tab';
@@ -456,7 +458,8 @@ class TabsX extends Widget
                         $headerOptions['aria-selected'] = 'false';
                     }
                     $linkOptions['aria-controls'] = $options['id'];
-                    $header = Html::a($label, '#' . $options['id'], $linkOptions);
+                    //$header = Html::a($label, '#' . $options['id'], $linkOptions);
+                    $header = Html::tag('span', $label, $linkOptions);
                 }
                 if ($this->renderTabContent) {
                     $tag = ArrayHelper::remove($options, 'tag', 'div');
