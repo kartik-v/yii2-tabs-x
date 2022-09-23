@@ -128,7 +128,7 @@ class TabsX extends Widget
      * by the "headerOptions" set in individual [[items]].
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $headerOptions = [];
+    public $headerOptions = ['role' => 'presentation'];
 
     /**
      * @var array list of HTML attributes for the tab header link tags. This will be overwritten
