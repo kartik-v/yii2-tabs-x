@@ -1,6 +1,12 @@
 Change Log: `yii2-tabs-x`
 =========================
 
+## Version 1.2.9
+
+**Date:** 15-Oct-2022
+
+- (enh #83, #84): Adds `role="presentation"` to list items.
+
 ## Version 1.2.8
 
 **Date:** 20-Sep-2021
